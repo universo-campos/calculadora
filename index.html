@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#12366b">
+<meta name="description" content="Calculadora acadêmica de médias e recuperação para estudantes da UNIVERSO.">
+<title>Calculadora de Média | UNIVERSO</title>
+<style>
+:root{--navy:#12366b;--blue:#1f4f91;--red:#e51e2a;--ink:#17243a;--muted:#65738a;--line:#e2e8f0;--bg:#f3f6fb;--white:#fff;--green:#137a4b;--amber:#9a5b00;--shadow:0 12px 34px rgba(18,54,107,.09)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.topbar{height:8px;background:linear-gradient(90deg,var(--navy) 0 70%,var(--red) 70%)}
+main{width:min(960px,calc(100% - 32px));margin:30px auto 48px}
+header{display:flex;align-items:center;gap:18px;margin-bottom:24px}
+.logo{width:106px;height:106px;object-fit:contain;background:white;border-radius:18px;padding:6px;box-shadow:0 3px 14px #17243a0d}
+.brand small{color:var(--blue);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}
+h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.15;letter-spacing:-.04em;margin:5px 0 7px;color:var(--navy)}
+.brand p{margin:0;color:var(--muted);font-size:.96rem}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:20px;align-items:start}
+.card{background:var(--white);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:24px}
+.card h2{margin:0 0 5px;font-size:1.13rem;color:var(--navy)}
+.sub{margin:0 0 20px;color:var(--muted);font-size:.9rem}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.field label{display:block;font-size:.9rem;font-weight:700;margin-bottom:7px}
+.field input{width:100%;height:48px;border:1px solid #cbd5e1;border-radius:11px;padding:0 13px;font:inherit;color:var(--ink);background:#fff;outline:none;transition:border .15s,box-shadow .15s}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1f4f911c}
+.field input::placeholder{color:#a0aaba}
+.hint{font-size:.76rem;color:var(--muted);margin-top:5px}
+.actions{display:flex;gap:10px;margin-top:20px}
+button{font:inherit;font-weight:750;border:0;border-radius:11px;padding:12px 16px;cursor:pointer;transition:transform .12s,opacity .12s}
+button:active{transform:scale(.98)}
+.primary{background:var(--navy);color:white;flex:1}
+.secondary{background:#edf2f8;color:var(--navy)}
+.results{position:sticky;top:18px}
+.status{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 10px;font-size:.8rem;font-weight:800;background:#eef2f7;color:#475569;margin:8px 0 14px}
+.status.good{background:#e5f6ed;color:var(--green)}
+.status.warn{background:#fff3d9;color:var(--amber)}
+.status.bad{background:#ffebed;color:#b4232d}
+.score-label{color:var(--muted);font-size:.88rem}
+.score{font-size:clamp(2.8rem,8vw,4.3rem);line-height:1.1;font-weight:850;letter-spacing:-.06em;color:var(--navy);font-variant-numeric:tabular-nums;margin:5px 0 8px}
+.score span{font-size:1.2rem;color:var(--muted);letter-spacing:0}
+.message{margin:0;color:var(--muted);font-size:.92rem}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.detail{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:.9rem}
+.detail span{color:var(--muted)}
+.detail strong{font-variant-numeric:tabular-nums;text-align:right}
+.next{border-radius:13px;padding:13px;background:#f2f6fc;margin-top:12px}
+.next b{display:block;color:var(--navy);font-size:.9rem;margin-bottom:4px}
+.next p{margin:0;color:#4b5b72;font-size:.87rem}
+.rule-note{margin-top:20px;padding:15px 17px;border:1px solid #dce5f2;border-radius:14px;background:#f8faff;color:#506078;font-size:.85rem}
+.rule-note strong{color:var(--navy)}
+footer{text-align:center;color:#7b8798;font-size:.8rem;margin-top:22px}
+@media(max-width:740px){main{margin-top:20px}.layout{grid-template-columns:1fr}.results{position:static}.card{padding:20px}.logo{width:82px;height:82px}.fields{gap:12px}}
+@media(max-width:390px){main{width:calc(100% - 20px)}header{gap:12px}.logo{width:68px;height:68px}.fields{grid-template-columns:1fr}.actions{flex-direction:column}.secondary{width:100%}}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<main>
+<header>
+  <img class="logo" src="assets/logo-universo.png" alt="Logotipo da Universidade Salgado de Oliveira">
+  <div class="brand">
+    <small>Universidade Salgado de Oliveira</small>
+    <h1>Calculadora de Média</h1>
+    <p>Consulte sua média e planeje os próximos passos.</p>
+  </div>
+</header>
+
+<div class="layout">
+<section class="card" aria-labelledby="input-title">
+  <h2 id="input-title">Informe suas notas</h2>
+  <p class="sub">Preencha as avaliações que você já realizou. Use notas de 0 a 10.</p>
+  <div class="fields">
+    <div class="field">
+      <label for="v1">V1 · Primeira prova</label>
+      <input id="v1" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ex.: 6,5">
+    </div>
+    <div class="field">
+      <label for="vt">VT · Trabalho</label>
+      <input id="vt" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ex.: 8,0">
+    </div>
+    <div class="field">
+      <label for="v2">V2 · Segunda prova</label>
+      <input id="v2" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ex.: 7,0">
+    </div>
+    <div class="field">
+      <label for="r1">R1 · Recuperação da V1</label>
+      <input id="r1" type="number" min="0" max="7" step="0.1" inputmode="decimal" placeholder="Opcional">
+      <div class="hint">Substitui a V1; nota máxima 7,0.</div>
+    </div>
+    <div class="field">
+      <label for="vs">VS · Recuperação final</label>
+      <input id="vs" type="number" min="0" max="7" step="0.1" inputmode="decimal" placeholder="Opcional">
+      <div class="hint">Substitui a média final; máximo 7,0.</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="calculate" type="button">Calcular média</button>
+    <button class="secondary" id="clear" type="button">Limpar</button>
+  </div>
+  <div class="rule-note"><strong>Como funciona:</strong> Média = (V1 × 2 + VT + V2 × 2) ÷ 5. A R1 pode substituir a V1 e a VS pode substituir a média final. As recuperações têm limite máximo de 7,0.</div>
+</section>
+
+<aside class="card results" aria-live="polite" aria-labelledby="result-title">
+  <h2 id="result-title">Seu resultado</h2>
+  <div id="status" class="status">● Aguardando notas</div>
+  <div class="score-label" id="score-label">Média calculada</div>
+  <div class="score" id="score">—<span> / 10</span></div>
+  <p class="message" id="message">Preencha V1, VT e V2 para calcular sua média.</p>
+  <hr>
+  <div class="detail"><span>V1 considerada</span><strong id="effective-v1">—</strong></div>
+  <div class="detail"><span>Média regular</span><strong id="regular">—</strong></div>
+  <div class="detail"><span>Média necessária</span><strong>7,0</strong></div>
+  <div class="next" id="next-box">
+    <b>Próximo passo</b>
+    <p id="next-message">Insira as notas das avaliações para receber uma orientação.</p>
+  </div>
+</aside>
+</div>
+<footer>Ferramenta independente de apoio ao estudante · Confira sempre as regras oficiais da sua disciplina.</footer>
+</main>
+<script>
+(() => {
+  const ids = ['v1','vt','v2','r1','vs'];
+  const $ = id => document.getElementById(id);
+  const fmt = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2});
+  const read = id => {
+    const raw = $(id).value.trim();
+    if (raw === '') return null;
+    const n = Number(raw.replace(',', '.'));
+    return Number.isFinite(n) ? n : NaN;
+  };
+  function setStatus(text, type='') {
+    $('status').className = 'status' + (type ? ' ' + type : '');
+    $('status').textContent = '● ' + text;
+  }
+  function render(score, label, message, status, type, v1, regular, next) {
+    $('score').innerHTML = (score === null ? '—' : fmt(score)) + '<span> / 10</span>';
+    $('score-label').textContent = label;
+    $('message').textContent = message;
+    setStatus(status,type);
+    $('effective-v1').textContent = v1 === null ? '—' : fmt(v1);
+    $('regular').textContent = regular === null ? '—' : fmt(regular);
+    $('next-message').textContent = next;
+  }
+  function calculate() {
+    const n = Object.fromEntries(ids.map(id => [id, read(id)]));
+    for (const id of ids) {
+      if (Number.isNaN(n[id])) {
+        render(null,'Média calculada','Digite uma nota válida entre os limites permitidos.','Verifique as notas','bad',null,null,'Corrija o campo destacado e calcule novamente.');
+        $(id).focus(); return;
+      }
+      if (n[id] !== null && (n[id] < 0 || n[id] > (id === 'r1' || id === 'vs' ? 7 : 10))) {
+        render(null,'Média calculada', id === 'r1' || id === 'vs' ? 'A nota da recuperação deve ficar entre 0 e 7.' : 'As notas das avaliações devem ficar entre 0 e 10.','Nota fora do limite','bad',null,null,'Ajuste a nota informada para continuar.');
+        $(id).focus(); return;
+      }
+    }
+    if (n.v1 === null || n.vt === null || n.v2 === null) {
+      render(null,'Média calculada','Preencha V1, VT e V2 para calcular a média regular.','Faltam notas','',null,null,'A média regular só pode ser calculada quando as três avaliações estiverem preenchidas.');
+      return;
+    }
+    let effectiveV1 = n.v1;
+    if (n.r1 !== null) effectiveV1 = Math.min(7,n.r1);
+    const regular = (effectiveV1*2 + n.vt + n.v2*2)/5;
+    let finalScore = regular, label = 'Média calculada';
+    if (n.vs !== null) {
+      finalScore = Math.min(7,n.vs);
+      label = 'Resultado após VS';
+      if (finalScore >= 7) {
+        render(finalScore,label,'A VS substituiu a média anterior e atingiu o limite de aprovação.','Aprovado','good',effectiveV1,regular,'Parabéns! Confira o lançamento oficial da nota no sistema acadêmico.');
+      } else {
+        render(finalScore,label,'A VS substituiu a média anterior, mas o resultado ficou abaixo de 7,0.','Abaixo da média','bad',effectiveV1,regular,'Confirme com a coordenação ou com o professor as regras oficiais de aprovação.');
+      }
+      return;
+    }
+    if (regular >= 7) {
+      render(regular,label,'Você atingiu a média mínima para aprovação.','Aprovado','good',effectiveV1,regular,'Você atingiu 7,0 ou mais. Confira o resultado no sistema acadêmico oficial.');
+    } else {
+      const needed = 7;
+      render(regular,label,'Sua média está abaixo de 7,0. Veja abaixo a orientação para a recuperação final.','Precisa de recuperação','warn',effectiveV1,regular,`Se a VS substituir a média inteira, será necessário obter 7,0 na VS para alcançar a aprovação, conforme a regra informada.`);
+    }
+  }
+  $('calculate').addEventListener('click',calculate);
+  ids.forEach(id => $(id).addEventListener('input', () => {
+    // Update automatically only once all three regular grades are filled.
+    if (['v1','vt','v2'].every(k => $(k).value.trim() !== '')) calculate();
+  }));
+  $('clear').addEventListener('click',() => {
+    ids.forEach(id => $(id).value='');
+    render(null,'Média calculada','Preencha V1, VT e V2 para calcular sua média.','Aguardando notas','',null,null,'Insira as notas das avaliações para receber uma orientação.');
+    $('v1').focus();
+  });
+})();
+</script>
+</body>
+</html>
